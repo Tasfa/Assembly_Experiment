@@ -1,0 +1,27 @@
+dtoc:
+      push bx
+calulate:
+      mov cl,al
+      mov ch,0
+      jcxz ok2
+
+      mov cx,0ah
+      
+   call divdw
+
+      add cx,30h
+      push cx
+
+ jmp short calulate
+ok2:
+    
+     	mov cx,ds:[si]
+	jcxz ok3
+	pop ds:[si]
+      	inc si
+    jmp short ok2
+
+ok3:
+ pop bx
+
+  ret

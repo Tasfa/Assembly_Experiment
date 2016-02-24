@@ -1,0 +1,64 @@
+assume cs:code,ds:data,ss:stack
+
+data segment 
+db 'Welcome to masm!',0
+data ends
+
+stack segment
+dw 8 dup(0)
+stack ends
+
+code segment
+start:
+     mov dh,12        ;输入行号
+     mov dl,40        ;输入列数
+     mov cl,74        ;输入颜色
+
+     mov ax,stack
+     mov ss,ax
+     mov sp,16
+     mov ax,data
+     mov ds,ax
+     
+
+     call show_str
+
+     mov ax,4c00h
+     int 21h
+
+
+show_str:
+     push cx
+   
+         mov ax,0b800h
+         mov es,ax
+         mov si,0
+         mov bp,0
+         mov di,0
+         mov ax,0
+
+         mov al,2
+         mul dl
+         push ax            ;计算相应的列数并入栈
+         mov al,00a0h
+         mul dh
+         push ax            ;计算相应的行数并入栈
+         mov bh,cl          ;将颜色存储在bx中，方便一次性输入16位
+         pop di             ;行号出栈并赋给di 下类似
+         pop bp
+change:
+         mov cl,ds:[si]
+         mov ch,0
+         jcxz ok
+
+         mov bl,ds:[si]
+         mov es:[di+bp],bx   ;写入显存
+         inc si
+         add bp,2
+ jmp short change
+ ok: 
+         pop cx
+         ret
+
+ code ends
+ end start
